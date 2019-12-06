@@ -1,25 +1,32 @@
-import React from 'react';
-import {connect} from "react-redux";
-import {setFilter, removeTodo} from "./actionCreators/actionCreaters";
+import React, { Component } from 'react'
+import { connect } from "react-redux";
+import { toggleTodo, removeTodo } from "./actionCreators/actionCreaters";
+import { TodoItem, RemoveButton } from './customStyledComponents/StyledComponents';
 
-function Todo(props) {
-    const {content, id, checked} = props;
-    let itemClass= "todo-item";
-    if(checked){
-        itemClass += " checked";
+class Todo extends Component {
+    render() {
+        const { content, id, checked, handleNotify } = this.props;
+        let checkedClass = false;
+        if (checked) {
+            checkedClass = true;
+        }
+        return (
+            <TodoItem checkedClass={checkedClass} onClick={() => { this.props.toggleTodo(id) }}>
+                {content}
+                <RemoveButton
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        this.props.removeTodo(id);
+                        handleNotify();
+                    }}>X</RemoveButton>
+            </TodoItem>
+        )
     }
-    return (
-        <div className={itemClass} onClick={() => {props.onCheckedToggle(id);}}>
-            {content}
-            <span
-                className="remove-todo"
-                onClick={(e) => {e.stopPropagation();props.removeTodo(id)}}>X</span>
-        </div>
-    );
 }
 
 const mapDispatchToProps = dispatch => ({
-    removeTodo: (id) => {dispatch(removeTodo(id))}
+    removeTodo: (id) => { dispatch(removeTodo(id)) },
+    toggleTodo: (id) => { dispatch(toggleTodo(id)) }
 });
 
 export default connect(null, mapDispatchToProps)(Todo);
